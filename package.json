@@ -1,0 +1,13 @@
+{
+  "name": "dmhelper",
+  "version": "1.0.0",
+  "description": "D&D Dungeon Master Helper",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter dmhelper-server dev\" \"pnpm --filter dmhelper-client dev\"",
+    "build": "pnpm --filter shared build && pnpm --filter dmhelper-server build && pnpm --filter dmhelper-client build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

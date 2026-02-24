@@ -1,0 +1,30 @@
+{
+  "name": "dmhelper-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "node --import tsx ./src/index.ts",
+    "build": "tsc",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.28.0",
+    "@dmhelper/shared": "workspace:*",
+    "@fastify/cors": "^9.0.0",
+    "@fastify/swagger": "^8.12.0",
+    "@fastify/swagger-ui": "^3.0.0",
+    "dotenv": "^16.3.0",
+    "fastify": "^4.25.0",
+    "gray-matter": "^4.0.3",
+    "openai": "^4.28.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
