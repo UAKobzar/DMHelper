@@ -1,7 +1,6 @@
 import React from "react";
 import { Settings } from "@dmhelper/shared";
 import { SettingsForm } from "./SettingsForm";
-import { Button } from "../ui/Button";
 
 interface SettingsPanelProps {
   settings: Settings | null;

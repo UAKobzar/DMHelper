@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ChatMessage, Mode, DataFile, Settings } from "@dmhelper/shared";
+import { ChatMessage, Mode, DataTree, Settings } from "@dmhelper/shared";
 import { apiClient } from "../api/client";
 
 export interface AppStore {
@@ -7,9 +7,10 @@ export interface AppStore {
   messages: ChatMessage[];
   isLoading: boolean;
   modes: Mode[];
-  dataFiles: DataFile[];
+  dataTree: DataTree | null;
   activeModeId: string | null;
   selectedFileIds: string[];
+  expandedFolders: Set<string>;
   settings: Settings | null;
   error: string | null;
 
@@ -19,6 +20,7 @@ export interface AppStore {
   loadSettings: () => Promise<void>;
   setActiveModeId: (modeId: string) => void;
   toggleFileSelection: (fileId: string) => void;
+  toggleFolderExpanded: (folderPath: string) => void;
   clearSelectedFiles: () => void;
   sendMessage: (content: string) => Promise<void>;
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
@@ -30,9 +32,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
   messages: [],
   isLoading: false,
   modes: [],
-  dataFiles: [],
+  dataTree: null,
   activeModeId: null,
   selectedFileIds: [],
+  expandedFolders: new Set(),
   settings: null,
   error: null,
 
@@ -47,8 +50,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   loadDataFiles: async () => {
     try {
-      const dataFiles = await apiClient.getDataFiles();
-      set({ dataFiles, error: null });
+      const dataTree = await apiClient.getDataFiles();
+      set({ dataTree, error: null });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Failed to load data files" });
     }
@@ -73,6 +76,18 @@ export const useAppStore = create<AppStore>((set, get) => ({
         ? state.selectedFileIds.filter((id) => id !== fileId)
         : [...state.selectedFileIds, fileId],
     }));
+  },
+
+  toggleFolderExpanded: (folderPath) => {
+    set((state) => {
+      const next = new Set(state.expandedFolders);
+      if (next.has(folderPath)) {
+        next.delete(folderPath);
+      } else {
+        next.add(folderPath);
+      }
+      return { expandedFolders: next };
+    });
   },
 
   clearSelectedFiles: () => {

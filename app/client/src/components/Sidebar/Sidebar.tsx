@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useAppStore } from "../../store/appStore";
 import { Button } from "../ui/Button";
 import { ModeSelector } from "./ModeSelector";
-import { ContextFileList } from "./ContextFileList";
+import { ContextFileTree } from "./ContextFileTree";
 
 interface SidebarProps {
   onOpenSettings: () => void;
@@ -11,13 +11,15 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onOpenSettings }) => {
   const {
     modes,
-    dataFiles,
+    dataTree,
     activeModeId,
     selectedFileIds,
+    expandedFolders,
     loadModes,
     loadDataFiles,
     setActiveModeId,
     toggleFileSelection,
+    toggleFolderExpanded,
     clearMessages,
   } = useAppStore();
 
@@ -39,11 +41,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenSettings }) => {
         onSelectMode={setActiveModeId}
       />
 
-      <ContextFileList
-        files={dataFiles}
-        selectedFileIds={selectedFileIds}
-        onToggleFile={toggleFileSelection}
-      />
+      {dataTree && (
+        <ContextFileTree
+          dataTree={dataTree}
+          selectedFileIds={selectedFileIds}
+          expandedFolders={expandedFolders}
+          onToggleFile={toggleFileSelection}
+          onToggleFolder={toggleFolderExpanded}
+        />
+      )}
 
       <div className="flex flex-col gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
         <Button

@@ -1,4 +1,4 @@
-import { Mode, DataFile, ChatRequest, ChatResponse, Settings } from "@dmhelper/shared";
+import { Mode, DataTree, ChatRequest, ChatResponse, Settings } from "@dmhelper/shared";
 
 const API_BASE = "/api";
 
@@ -8,7 +8,7 @@ export const apiClient = {
     return res.json();
   },
 
-  async getDataFiles(): Promise<DataFile[]> {
+  async getDataFiles(): Promise<DataTree> {
     const res = await fetch(`${API_BASE}/data`);
     return res.json();
   },

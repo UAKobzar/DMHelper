@@ -11,6 +11,20 @@ export interface DataFile {
   filename: string;
 }
 
+// Recursive folder structure for data tree
+export interface DataFolder {
+  name: string;
+  path: string;
+  folders: DataFolder[];
+  files: DataFile[];
+}
+
+// Tree of data files organized by world subfolders
+export interface DataTree {
+  worlds: DataFolder[];
+  rootFiles: DataFile[];
+}
+
 // Chat message
 export interface ChatMessage {
   role: "user" | "assistant";
