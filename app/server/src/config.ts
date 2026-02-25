@@ -2,9 +2,10 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-dotenv.config();
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: path.resolve(process.cwd(), "../..", ".env") });
+
 
 export const config = {
   LLM_PROVIDER: (process.env.LLM_PROVIDER || "anthropic") as
