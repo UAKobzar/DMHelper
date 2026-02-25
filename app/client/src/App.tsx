@@ -14,7 +14,7 @@ const App: React.FC = () => {
   }, [loadSettings]);
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen">
       <Sidebar onOpenSettings={() => setShowSettings(true)} />
       <div className="flex-1 flex flex-col relative">
         {error && (

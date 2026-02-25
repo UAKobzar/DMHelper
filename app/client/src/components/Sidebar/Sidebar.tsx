@@ -27,10 +27,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenSettings }) => {
   }, [loadModes, loadDataFiles]);
 
   return (
-    <div className="w-64 bg-gray-50 border-r border-gray-200 p-4 flex flex-col gap-6 overflow-y-auto">
+    <div className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-6 overflow-y-auto">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">DM Helper</h1>
-        <p className="text-sm text-gray-500">D&D Assistant</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">DM Helper</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">D&D Assistant</p>
       </div>
 
       <ModeSelector
@@ -45,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenSettings }) => {
         onToggleFile={toggleFileSelection}
       />
 
-      <div className="flex flex-col gap-2 pt-4 border-t border-gray-200">
+      <div className="flex flex-col gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
         <Button
           onClick={clearMessages}
           variant="outline"
