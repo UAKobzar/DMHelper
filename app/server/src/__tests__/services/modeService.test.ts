@@ -1,15 +1,16 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
-import { promises as fs } from "fs";
-import * as modeService from "../../services/modeService.js";
+import fs from "fs/promises";
+import * as modeService from "../../services/modeService";
 
 vi.mock("fs/promises");
 
 beforeAll(async () => {
   const mockFs = vi.mocked(fs);
 
-  mockFs.readdir.mockResolvedValue(["dungeon-master.md", "narrator.md"]);
-  mockFs.readFile.mockImplementation((filepath) => {
-    if (filepath.includes("dungeon-master.md")) {
+  mockFs.readdir.mockResolvedValue(["dungeon-master.md", "narrator.md"] as any);
+  mockFs.readFile.mockImplementation((filepath: any) => {
+    const p = String(filepath);
+    if (p.includes("dungeon-master.md")) {
       return Promise.resolve(`---
 name: Dungeon Master
 description: Narrate as a DM
@@ -17,7 +18,7 @@ description: Narrate as a DM
 
 You are a DM.`);
     }
-    if (filepath.includes("narrator.md")) {
+    if (p.includes("narrator.md")) {
       return Promise.resolve(`---
 name: Narrator
 description: Tell stories

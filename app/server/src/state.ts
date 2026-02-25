@@ -1,5 +1,5 @@
 import { Settings } from "@dmhelper/shared";
-import { config } from "./config.js";
+import { config } from "./config";
 
 export interface AppState {
   settings: Settings;

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ChatRequest } from "@dmhelper/shared";
-import { processChat } from "../services/chatService.js";
+import { processChat } from "../services/chatService";
 
 export async function registerChatRoutes(fastify: FastifyInstance) {
   fastify.post(

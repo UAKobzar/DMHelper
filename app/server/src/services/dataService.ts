@@ -1,7 +1,7 @@
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import path from "path";
 import { DataFile } from "@dmhelper/shared";
-import { config } from "../config.js";
+import { config } from "../config";
 
 let dataFilesCache: Map<string, string> | null = null;
 

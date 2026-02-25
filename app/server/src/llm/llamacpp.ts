@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { LLMRequest, LLMProvider } from "./types.js";
+import { LLMRequest, LLMProvider } from "./types";
 import { LLMResponse } from "@dmhelper/shared";
 
 export class LlamaCppProvider implements LLMProvider {
@@ -17,10 +17,10 @@ export class LlamaCppProvider implements LLMProvider {
     const response = await this.client.chat.completions.create({
       model: request.model,
       max_tokens: 4096,
-      messages: request.messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: [
+        ...(request.systemPrompt ? [{ role: "system" as const, content: request.systemPrompt }] : []),
+        ...request.messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+      ],
     });
 
     const content =

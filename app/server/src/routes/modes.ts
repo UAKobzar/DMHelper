@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getModes } from "../services/modeService.js";
+import { getModes } from "../services/modeService";
 
 export async function registerModesRoutes(fastify: FastifyInstance) {
   fastify.get(

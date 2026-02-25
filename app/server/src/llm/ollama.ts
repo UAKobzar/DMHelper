@@ -1,4 +1,4 @@
-import { LLMRequest, LLMProvider } from "./types.js";
+import { LLMRequest, LLMProvider } from "./types";
 import { LLMResponse } from "@dmhelper/shared";
 
 export class OllamaProvider implements LLMProvider {
@@ -15,10 +15,10 @@ export class OllamaProvider implements LLMProvider {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: request.model,
-        messages: request.messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
+        messages: [
+          ...(request.systemPrompt ? [{ role: "system", content: request.systemPrompt }] : []),
+          ...request.messages.map((m) => ({ role: m.role, content: m.content })),
+        ],
         stream: false,
       }),
     });

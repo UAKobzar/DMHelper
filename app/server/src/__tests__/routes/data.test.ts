@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import Fastify, { FastifyInstance } from "fastify";
-import { registerDataRoutes } from "../../routes/data.js";
-import * as dataService from "../../services/dataService.js";
+import { registerDataRoutes } from "../../routes/data";
+import * as dataService from "../../services/dataService";
 
 vi.mock("../../services/dataService.js");
 

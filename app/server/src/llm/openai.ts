@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { LLMRequest, LLMProvider } from "./types.js";
+import { LLMRequest, LLMProvider } from "./types";
 import { LLMResponse } from "@dmhelper/shared";
 
 export class OpenAIProvider implements LLMProvider {
@@ -11,17 +11,17 @@ export class OpenAIProvider implements LLMProvider {
   }
 
   async complete(request: LLMRequest): Promise<LLMResponse> {
-    const response = await this.client.chat.completions.create({
+    const response = await this.client.responses.create({
       model: request.model,
-      max_tokens: 4096,
-      messages: request.messages.map((m) => ({
+      ...(request.systemPrompt ? { instructions: request.systemPrompt } : {}),
+      input: request.messages.map((m) => ({
         role: m.role,
         content: m.content,
       })),
+      max_output_tokens: 4096,
     });
 
-    const content =
-      response.choices[0].message.content || "No response generated";
+    const content = response.output_text || "No response generated";
 
     return { content };
   }

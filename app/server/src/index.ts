@@ -3,13 +3,13 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
 import fastifyCors from "@fastify/cors";
 
-import { config } from "./config.js";
-import { loadModes } from "./services/modeService.js";
-import { loadDataFiles } from "./services/dataService.js";
-import { registerModesRoutes } from "./routes/modes.js";
-import { registerDataRoutes } from "./routes/data.js";
-import { registerChatRoutes } from "./routes/chat.js";
-import { registerSettingsRoutes } from "./routes/settings.js";
+import { config } from "./config";
+import { loadModes } from "./services/modeService";
+import { loadDataFiles } from "./services/dataService";
+import { registerModesRoutes } from "./routes/modes";
+import { registerDataRoutes } from "./routes/data";
+import { registerChatRoutes } from "./routes/chat";
+import { registerSettingsRoutes } from "./routes/settings";
 
 const fastify = Fastify({
   logger: true,

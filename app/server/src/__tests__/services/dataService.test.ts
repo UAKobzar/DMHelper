@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
-import { promises as fs } from "fs";
-import * as dataService from "../../services/dataService.js";
+import fs from "fs/promises";
+import * as dataService from "../../services/dataService";
 
 vi.mock("fs/promises");
 
 beforeAll(async () => {
   const mockFs = vi.mocked(fs);
 
-  mockFs.readdir.mockResolvedValue(["world.md", "creatures.md"]);
-  mockFs.readFile.mockImplementation((filepath) => {
-    if (filepath.includes("world.md")) {
+  mockFs.readdir.mockResolvedValue(["world.md", "creatures.md"] as any);
+  mockFs.readFile.mockImplementation((filepath: any) => {
+    const p = String(filepath);
+    if (p.includes("world.md")) {
       return Promise.resolve("# World Content");
     }
-    if (filepath.includes("creatures.md")) {
+    if (p.includes("creatures.md")) {
       return Promise.resolve("# Creatures Content");
     }
     return Promise.reject(new Error("File not found"));

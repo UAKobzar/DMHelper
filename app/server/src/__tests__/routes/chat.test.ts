@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import Fastify, { FastifyInstance } from "fastify";
-import { registerChatRoutes } from "../../routes/chat.js";
-import * as chatService from "../../services/chatService.js";
+import { registerChatRoutes } from "../../routes/chat";
+import * as chatService from "../../services/chatService";
 
 vi.mock("../../services/chatService.js");
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import Fastify, { FastifyInstance } from "fastify";
-import { registerModesRoutes } from "../../routes/modes.js";
-import * as modeService from "../../services/modeService.js";
+import { registerModesRoutes } from "../../routes/modes";
+import * as modeService from "../../services/modeService";
 
 vi.mock("../../services/modeService.js");
 

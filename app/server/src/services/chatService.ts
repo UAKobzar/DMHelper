@@ -1,8 +1,8 @@
-import { ChatMessage, ChatRequest, ChatResponse } from "@dmhelper/shared";
-import { getMode } from "./modeService.js";
-import { getDataFileContent } from "./dataService.js";
-import { createProvider } from "../llm/factory.js";
-import { state } from "../state.js";
+import { ChatRequest, ChatResponse } from "@dmhelper/shared";
+import { getMode } from "./modeService";
+import { getDataFileContent } from "./dataService";
+import { createProvider } from "../llm/factory";
+import { state } from "../state";
 
 export async function processChat(req: ChatRequest): Promise<ChatResponse> {
   // Get effective settings (request overrides take precedence)
@@ -33,12 +33,6 @@ export async function processChat(req: ChatRequest): Promise<ChatResponse> {
     }
   }
 
-  // Build messages array with system prompt as first user message
-  const messages: ChatMessage[] = [
-    { role: "user", content: systemPrompt },
-    ...req.messages,
-  ];
-
   // Call LLM provider
   const llmProvider = createProvider(provider, model, {
     anthropicKey: process.env.ANTHROPIC_API_KEY,
@@ -49,8 +43,9 @@ export async function processChat(req: ChatRequest): Promise<ChatResponse> {
   });
 
   const response = await llmProvider.complete({
-    messages,
+    messages: req.messages,
     model,
+    systemPrompt,
   });
 
   return {

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Settings } from "@dmhelper/shared";
-import { getSettings, updateSettings } from "../state.js";
+import { getSettings, updateSettings } from "../state";
 
 export async function registerSettingsRoutes(fastify: FastifyInstance) {
   fastify.get(

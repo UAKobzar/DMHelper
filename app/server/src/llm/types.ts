@@ -3,6 +3,7 @@ import { ChatMessage, LLMResponse } from "@dmhelper/shared";
 export interface LLMRequest {
   messages: ChatMessage[];
   model: string;
+  systemPrompt?: string;
 }
 
 export interface LLMProvider {

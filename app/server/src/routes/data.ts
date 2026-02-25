@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getDataFiles, getDataFileContent } from "../services/dataService.js";
+import { getDataFiles, getDataFileContent } from "../services/dataService";
 
 export async function registerDataRoutes(fastify: FastifyInstance) {
   fastify.get(

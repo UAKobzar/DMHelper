@@ -1,8 +1,8 @@
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 import { Mode } from "@dmhelper/shared";
-import { config } from "../config.js";
+import { config } from "../config";
 
 let modesCache: Map<string, { mode: Mode; content: string }> | null = null;
 
