@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { DataFile, DataFolder, DataTree } from "@dmhelper/shared";
+import { DataFile, DataFolder, DataTree, FileProposal, SearchReplacePair } from "@dmhelper/shared";
 import { config } from "../config";
 
 let dataFilesCache: Map<string, string> | null = null;
@@ -83,4 +83,60 @@ export function getDataFileContent(id: string): string | null {
   // Guard against path traversal
   if (id.includes("..")) return null;
   return dataFilesCache.get(id) || null;
+}
+
+// ── File proposal helpers ─────────────────────────────────────────────────────
+
+function safeDataPath(fileId: string): string | null {
+  if (fileId.includes("..") || path.isAbsolute(fileId)) return null;
+  return path.join(config.DATA_DIR, `${fileId}.md`);
+}
+
+/** Validates a proposal WITHOUT writing anything. Returns error string or null. */
+export async function validateProposal(proposal: FileProposal): Promise<string | null> {
+  const filePath = safeDataPath(proposal.fileId);
+  if (!filePath) return "Invalid file path";
+
+  if (proposal.operation === "create") {
+    try {
+      await fs.access(filePath);
+      return `File already exists: ${proposal.fileId}`;
+    } catch {
+      // Good — file does not exist
+    }
+    if (!proposal.content) return "content is required for create";
+  } else {
+    let existing: string;
+    try {
+      existing = await fs.readFile(filePath, "utf-8");
+    } catch {
+      return `File not found: ${proposal.fileId}`;
+    }
+    if (!proposal.edits?.length) return "edits array is required for update";
+    for (const edit of proposal.edits) {
+      if (!existing.includes(edit.search)) {
+        return `Search string not found: "${edit.search.slice(0, 60)}"`;
+      }
+    }
+  }
+  return null;
+}
+
+/** Creates a new data file. Caller must pre-validate. */
+export async function createDataFile(fileId: string, content: string): Promise<void> {
+  const filePath = safeDataPath(fileId)!;
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, content, "utf-8");
+  await loadDataFiles();
+}
+
+/** Updates an existing file by applying search/replace pairs. Caller must pre-validate. */
+export async function updateDataFile(fileId: string, edits: SearchReplacePair[]): Promise<void> {
+  const filePath = safeDataPath(fileId)!;
+  let content = await fs.readFile(filePath, "utf-8");
+  for (const { search, replace } of edits) {
+    content = content.replace(search, replace);
+  }
+  await fs.writeFile(filePath, content, "utf-8");
+  await loadDataFiles();
 }

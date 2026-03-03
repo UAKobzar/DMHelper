@@ -1,9 +1,10 @@
-import { ChatMessage, LLMResponse } from "@dmhelper/shared";
+import { ChatMessage, LLMResponse, ToolDefinition } from "@dmhelper/shared";
 
 export interface LLMRequest {
   messages: ChatMessage[];
   model: string;
   systemPrompt?: string;
+  tools?: ToolDefinition[];
 }
 
 export interface LLMProvider {

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ChatMessage, Mode, DataTree, Settings } from "@dmhelper/shared";
+import { ChatMessage, Mode, DataTree, Settings, AnyToolCall, ToolCallResolution } from "@dmhelper/shared";
 import { apiClient } from "../api/client";
 
 export interface AppStore {
@@ -13,6 +13,7 @@ export interface AppStore {
   expandedFolders: Set<string>;
   settings: Settings | null;
   error: string | null;
+  pendingToolCalls: AnyToolCall[];
 
   // Actions
   loadModes: () => Promise<void>;
@@ -26,6 +27,7 @@ export interface AppStore {
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   clearMessages: () => void;
   setError: (error: string | null) => void;
+  resolveToolCalls: (resolutions: ToolCallResolution[]) => Promise<void>;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -38,6 +40,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   expandedFolders: new Set(),
   settings: null,
   error: null,
+  pendingToolCalls: [],
 
   loadModes: async () => {
     try {
@@ -101,7 +104,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       return;
     }
 
-    // Add user message
     const userMessage: ChatMessage = { role: "user", content };
     set((s) => ({ messages: [...s.messages, userMessage], isLoading: true, error: null }));
 
@@ -112,20 +114,70 @@ export const useAppStore = create<AppStore>((set, get) => ({
         contextFileIds: state.selectedFileIds,
       });
 
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        content: response.content,
-      };
-
-      set((s) => ({
-        messages: [...s.messages, assistantMessage],
-        isLoading: false,
-      }));
+      if (response.pendingToolCalls?.length) {
+        // Assistant returned tool calls — store them for user resolution
+        const assistantMessage: ChatMessage = {
+          role: "assistant",
+          content: response.content,
+          toolCalls: response.pendingToolCalls,
+        };
+        set((s) => ({
+          messages: [...s.messages, assistantMessage],
+          isLoading: false,
+          pendingToolCalls: response.pendingToolCalls!,
+        }));
+      } else {
+        const assistantMessage: ChatMessage = {
+          role: "assistant",
+          content: response.content,
+        };
+        set((s) => ({
+          messages: [...s.messages, assistantMessage],
+          isLoading: false,
+        }));
+      }
     } catch (err) {
       set({
         isLoading: false,
         error: err instanceof Error ? err.message : "Chat failed",
       });
+    }
+  },
+
+  resolveToolCalls: async (resolutions) => {
+    const state = get();
+    set({ isLoading: true, pendingToolCalls: [], error: null });
+    try {
+      const response = await apiClient.resolveProposals({
+        resolutions,
+        messages: state.messages,
+        modeId: state.activeModeId!,
+        contextFileIds: state.selectedFileIds,
+      });
+
+      // toolMessages contains tool_result messages + follow-up assistant msg
+      const newMsgs: ChatMessage[] = response.toolMessages || [];
+      // If toolMessages doesn't include an assistant message, add one
+      if (!newMsgs.find((m) => m.role === "assistant")) {
+        newMsgs.push({
+          role: "assistant",
+          content: response.content,
+          ...(response.pendingToolCalls?.length ? { toolCalls: response.pendingToolCalls } : {}),
+        });
+      }
+
+      set((s) => ({
+        messages: [...s.messages, ...newMsgs],
+        isLoading: false,
+        pendingToolCalls: response.pendingToolCalls || [],
+      }));
+
+      // Reload sidebar if any files were approved
+      if (resolutions.some((r) => r.decision === "approved")) {
+        await get().loadDataFiles();
+      }
+    } catch (err) {
+      set({ isLoading: false, error: err instanceof Error ? err.message : "Resolve failed" });
     }
   },
 
@@ -139,7 +191,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   clearMessages: () => {
-    set({ messages: [] });
+    set({ messages: [], pendingToolCalls: [] });
   },
 
   setError: (error) => {

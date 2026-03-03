@@ -1,4 +1,11 @@
-import { Mode, DataTree, ChatRequest, ChatResponse, Settings } from "@dmhelper/shared";
+import {
+  Mode,
+  DataTree,
+  ChatRequest,
+  ChatResponse,
+  Settings,
+  ResolveProposalsRequest,
+} from "@dmhelper/shared";
 
 const API_BASE = "/api";
 
@@ -28,6 +35,21 @@ export const apiClient = {
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.error || "Chat failed");
+    }
+
+    return res.json();
+  },
+
+  async resolveProposals(request: ResolveProposalsRequest): Promise<ChatResponse> {
+    const res = await fetch(`${API_BASE}/chat/resolve-proposals`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Resolve proposals failed");
     }
 
     return res.json();

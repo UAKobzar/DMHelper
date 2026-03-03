@@ -21,7 +21,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages }) => {
         </div>
       ) : (
         messages.map((msg, idx) => (
-          <MessageBubble key={idx} role={msg.role} content={msg.content} />
+          <MessageBubble key={idx} message={msg} />
         ))
       )}
       <div ref={endRef} />
